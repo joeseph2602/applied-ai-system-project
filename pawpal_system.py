@@ -1,7 +1,9 @@
+
 from dataclasses import dataclass, field
 from enum import Enum
 from datetime import datetime
 from typing import Optional, List
+from logger import log_action, log_error
 
 
 class HealthStatus(Enum):
@@ -38,6 +40,7 @@ class Task:
         """Mark the task as completed."""
         self.status = TaskStatus.COMPLETED
         self.completed_at = datetime.now()
+        log_action(f"Task completed: {self.description} (ID: {self.id}) at {self.completed_at}")
         return f"Task '{self.description}' marked as completed"
 
     def get_details(self) -> dict:
@@ -222,10 +225,14 @@ class Scheduler:
                 ]
 
                 if same_pet_conflicts:
-                    warnings.append(f"⚠️  Time conflict at {time_slot}: {'; '.join(same_pet_conflicts)}")
+                    warning = f"⚠️  Time conflict at {time_slot}: {'; '.join(same_pet_conflicts)}"
+                    warnings.append(warning)
+                    log_action(f"Conflict detected: {warning}")
                 else:
                     # Different pets at same time
                     all_task_descriptions = [t.description for t in conflicting_tasks]
-                    warnings.append(f"ℹ️  Multiple pets scheduled at {time_slot}: {', '.join(all_task_descriptions)}")
+                    info = f"ℹ️  Multiple pets scheduled at {time_slot}: {', '.join(all_task_descriptions)}"
+                    warnings.append(info)
+                    log_action(f"Conflict detected: {info}")
 
         return warnings
