@@ -197,6 +197,7 @@ else:
     st.warning("⚠️ Add some pets first before generating a schedule")
 
 if st.button("Generate Schedule"):
+    total_tasks = len(st.session_state.owner.get_all_tasks())
     if not st.session_state.owner.pets:
         st.error("Please add at least one pet before generating a schedule.")
     elif total_tasks == 0:
